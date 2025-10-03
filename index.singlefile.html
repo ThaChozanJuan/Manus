@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator - Return on Investment</title>
+    <style>
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #374151;
+    background-color: #f9fafb;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* Calculator layout */
+.calculator-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .calculator-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Input section styles */
+.inputs-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.input-group {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-icon {
+    color: #10b981;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #10b981;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.label-with-tooltip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.help-icon {
+    color: #9ca3af;
+    cursor: help;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-prefix {
+    position: absolute;
+    left: 0.75rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 0.75rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.with-prefix {
+    padding-left: 2rem;
+}
+
+.with-suffix {
+    padding-right: 2rem;
+}
+
+/* Results section styles */
+.results-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.total-return-card {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.return-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.dollar-sign {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.return-label {
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+.return-amount {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.return-subtitle {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Benefits grid */
+.benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.benefit-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.benefit-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.benefit-icon {
+    color: #10b981;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.benefit-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    line-height: 1.4;
+}
+
+.benefit-tooltip {
+    margin-left: auto;
+}
+
+.benefit-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.benefit-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.benefit-description {
+    font-size: 0.75rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+/* Summary cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.summary-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Disclaimer */
+.disclaimer {
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.disclaimer p {
+    font-size: 0.75rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 2rem;
+    }
+    
+    .return-amount {
+        font-size: 2.5rem;
+    }
+    
+    .benefit-amount {
+        font-size: 1.25rem;
+    }
+    
+    .summary-amount {
+        font-size: 1.25rem;
+    }
+}
+
+/* Tooltip styles */
+.tooltip-wrapper {
+    position: relative;
+}
+
+.tooltip-wrapper:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 10;
+    margin-bottom: 0.25rem;
+}
+
+.tooltip-wrapper:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #1f2937;
+    z-index: 10;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">What's the return on investment?</h1>
+            <p class="subtitle">
+                Building the business case for financial wellness programs starts with quantifying their value.
+                Calculate the potential savings from reduced turnover, absenteeism, and improved productivity
+                when you support employees with financial stress through Prospr by Seedli.
+            </p>
+        </header>
+
+        <div class="calculator-layout">
+            <div class="inputs-section">
+                <div class="input-group">
+                    <div class="section-header">
+                        <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <h2 class="section-title">Calculate Turnover Savings</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="employees" class="form-label">Number of employees</label>
+                        <input type="text" id="employees" class="form-input" placeholder="Enter number of employees" value="500">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avgSalary" class="form-label">Average annual salary</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="avgSalary" class="form-input with-prefix" placeholder="82160" value="82160">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-with-tooltip">
+                            <label for="turnoverRate" class="form-label">Turnover rate (%)</label>
+                            <div class="tooltip-wrapper">
+                                <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <path d="M12 17h.01"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" id="turnoverRate" class="form-input with-suffix" placeholder="0.0" value="10.1">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="section-header">
+                        <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                        <h2 class="section-title">Calculate Productivity Savings</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="managers" class="form-label">Number of supervisors / managers</label>
+                        <input type="text" id="managers" class="form-input" placeholder="Enter number of managers" value="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avgManagerSalary" class="form-label">Average manager annual salary</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="avgManagerSalary" class="form-input with-prefix" placeholder="85280" value="85280">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-with-tooltip">
+                            <label for="absenteeismRate" class="form-label">Absenteeism rate (%)</label>
+                            <div class="tooltip-wrapper">
+                                <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <path d="M12 17h.01"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" id="absenteeismRate" class="form-input with-suffix" placeholder="0.0" value="2.2">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="total-return-card">
+                    <div class="return-header">
+                        <span class="dollar-sign">$</span>
+                        <span class="return-label">Projected Total Annual Return</span>
+                    </div>
+                    <div class="return-amount" id="totalReturn">$878,426</div>
+                    <p class="return-subtitle">Based on industry benchmarks and your company metrics</p>
+                    <button class="download-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Results as PDF
+                    </button>
+                </div>
+
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Keep your team healthy and engaged</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="turnoverSavings">$165,963</div>
+                        <div class="benefit-label">Reduced annual cost of turnover</div>
+                        <p class="benefit-description">Savings from reduced recruitment and training costs when financial wellness reduces employee turnover</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Reduce unplanned/sick leave</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="absenteeismSavings">$46,996</div>
+                        <div class="benefit-label">Reduced annual cost of absenteeism</div>
+                        <p class="benefit-description">Savings from reduced sick days and unplanned absences when employees have better financial wellness</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <polyline points="12,7 12,12 15,15"></polyline>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Give your managers their time back</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="managerTimeSaved">$8,187</div>
+                        <div class="benefit-label">Annual manager time saved</div>
+                        <p class="benefit-description">Time savings when managers spend less time dealing with financial stress-related employee issues</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Productivity uplift</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="productivityGains">$657,280</div>
+                        <div class="benefit-label">Annual productivity gains</div>
+                        <p class="benefit-description">Increased productivity when employees are less distracted by financial stress and worries</p>
+                    </div>
+                </div>
+
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-label">Program Cost (inc. GST)</div>
+                        <div class="summary-amount" id="programCost">$275,000</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Net Benefit</div>
+                        <div class="summary-amount" id="netBenefit">$603,426</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">ROI %</div>
+                        <div class="summary-amount" id="roiPercent">219%</div>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <p>This calculator provides indicative results only, based on industry benchmarks (AMP Financial Wellness Report, PwC, Deloitte). Calculations use typical scenario assumptions including 40% program participation rate, turnover replacement cost at 50% of salary, and an absenteeism disruption factor of 1.3. Program costs include 10% GST. Actual results may vary.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// ROI Calculator Logic
+// Based on industry benchmarks and typical scenario assumptions
+
+class ROICalculator {
+    constructor() {
+        this.inputs = {
+            employees: 500,
+            avgSalary: 82160,
+            turnoverRate: 10.1,
+            managers: 50,
+            avgManagerSalary: 85280,
+            absenteeismRate: 2.2
+        };
+        
+        // Industry benchmark constants
+        this.constants = {
+            participationRate: 0.40, // 40% program participation rate
+            turnoverReplacementCost: 0.50, // 50% of salary
+            absenteeismDisruptionFactor: 1.3, // Disruption factor
+            gstRate: 0.10, // 10% GST
+            programBaseCost: 250000, // Base program cost before GST
+            managerTimePerEmployee: 2, // Hours per employee per year
+            productivityImprovementRate: 0.05 // 5% productivity improvement
+        };
+        
+        this.initializeEventListeners();
+        this.calculate();
+    }
+    
+    initializeEventListeners() {
+        // Add event listeners to all input fields
+        const inputs = ['employees', 'avgSalary', 'turnoverRate', 'managers', 'avgManagerSalary', 'absenteeismRate'];
+        
+        inputs.forEach(inputId => {
+            const element = document.getElementById(inputId);
+            if (element) {
+                element.addEventListener('input', (e) => {
+                    this.updateInput(inputId, e.target.value);
+                });
+                element.addEventListener('blur', (e) => {
+                    this.formatInput(inputId, e.target);
+                });
+            }
+        });
+    }
+    
+    updateInput(inputId, value) {
+        // Parse numeric value, handling commas and dollar signs
+        const numericValue = parseFloat(value.replace(/[$,%]/g, '')) || 0;
+        this.inputs[inputId] = numericValue;
+        this.calculate();
+    }
+    
+    formatInput(inputId, element) {
+        // Format input values for display
+        const value = this.inputs[inputId];
+        
+        if (inputId === 'avgSalary' || inputId === 'avgManagerSalary') {
+            element.value = this.formatNumber(value, 0);
+        } else if (inputId === 'turnoverRate' || inputId === 'absenteeismRate') {
+            element.value = value.toFixed(1);
+        } else {
+            element.value = Math.round(value).toString();
+        }
+    }
+    
+    // Calculate turnover savings
+    calculateTurnoverSavings() {
+        const { employees, avgSalary, turnoverRate } = this.inputs;
+        const { participationRate, turnoverReplacementCost } = this.constants;
+        
+        // Annual turnover without program
+        const annualTurnover = employees * (turnoverRate / 100);
+        
+        // Turnover reduction from program (assuming 30% reduction for participants)
+        const turnoverReduction = annualTurnover * participationRate * 0.30;
+        
+        // Cost savings from reduced turnover
+        const turnoverSavings = turnoverReduction * avgSalary * turnoverReplacementCost;
+        
+        return Math.round(turnoverSavings);
+    }
+    
+    // Calculate absenteeism savings
+    calculateAbsenteeismSavings() {
+        const { employees, avgSalary, absenteeismRate } = this.inputs;
+        const { participationRate, absenteeismDisruptionFactor } = this.constants;
+        
+        // Annual absenteeism days without program
+        const annualAbsenteeismDays = employees * (absenteeismRate / 100) * 250; // 250 working days
+        
+        // Absenteeism reduction from program (assuming 25% reduction for participants)
+        const absenteeismReduction = annualAbsenteeismDays * participationRate * 0.25;
+        
+        // Cost savings from reduced absenteeism (daily salary + disruption factor)
+        const dailySalary = avgSalary / 250;
+        const absenteeismSavings = absenteeismReduction * dailySalary * absenteeismDisruptionFactor;
+        
+        return Math.round(absenteeismSavings);
+    }
+    
+    // Calculate manager time savings
+    calculateManagerTimeSavings() {
+        const { employees, avgManagerSalary } = this.inputs;
+        const { participationRate, managerTimePerEmployee } = this.constants;
+        
+        // Time saved per year (hours) from reduced financial stress issues
+        const timeSavedHours = employees * participationRate * managerTimePerEmployee * 0.40; // 40% reduction
+        
+        // Hourly manager rate (assuming 2000 working hours per year)
+        const hourlyRate = avgManagerSalary / 2000;
+        
+        // Manager time savings
+        const managerTimeSavings = timeSavedHours * hourlyRate;
+        
+        return Math.round(managerTimeSavings);
+    }
+    
+    // Calculate productivity gains
+    calculateProductivityGains() {
+        const { employees, avgSalary } = this.inputs;
+        const { participationRate, productivityImprovementRate } = this.constants;
+        
+        // Productivity gains from reduced financial stress
+        const productivityGains = employees * participationRate * avgSalary * productivityImprovementRate;
+        
+        return Math.round(productivityGains);
+    }
+    
+    // Calculate program cost
+    calculateProgramCost() {
+        const { employees } = this.inputs;
+        const { gstRate } = this.constants;
+        
+        // Base cost calculation (simplified - could be more complex based on employee tiers)
+        const baseCost = Math.max(250000, employees * 500); // Minimum $250k or $500 per employee
+        const programCost = baseCost * (1 + gstRate);
+        
+        return Math.round(programCost);
+    }
+    
+    // Main calculation method
+    calculate() {
+        const turnoverSavings = this.calculateTurnoverSavings();
+        const absenteeismSavings = this.calculateAbsenteeismSavings();
+        const managerTimeSavings = this.calculateManagerTimeSavings();
+        const productivityGains = this.calculateProductivityGains();
+        const programCost = this.calculateProgramCost();
+        
+        const totalReturn = turnoverSavings + absenteeismSavings + managerTimeSavings + productivityGains;
+        const netBenefit = totalReturn - programCost;
+        const roiPercent = programCost > 0 ? Math.round((netBenefit / programCost) * 100) : 0;
+        
+        // Update display
+        this.updateDisplay({
+            totalReturn,
+            turnoverSavings,
+            absenteeismSavings,
+            managerTimeSavings,
+            productivityGains,
+            programCost,
+            netBenefit,
+            roiPercent
+        });
+    }
+    
+    // Update display elements
+    updateDisplay(results) {
+        const elements = {
+            totalReturn: document.getElementById('totalReturn'),
+            turnoverSavings: document.getElementById('turnoverSavings'),
+            absenteeismSavings: document.getElementById('absenteeismSavings'),
+            managerTimeSaved: document.getElementById('managerTimeSaved'),
+            productivityGains: document.getElementById('productivityGains'),
+            programCost: document.getElementById('programCost'),
+            netBenefit: document.getElementById('netBenefit'),
+            roiPercent: document.getElementById('roiPercent')
+        };
+        
+        // Update monetary values
+        if (elements.totalReturn) elements.totalReturn.textContent = this.formatCurrency(results.totalReturn);
+        if (elements.turnoverSavings) elements.turnoverSavings.textContent = this.formatCurrency(results.turnoverSavings);
+        if (elements.absenteeismSavings) elements.absenteeismSavings.textContent = this.formatCurrency(results.absenteeismSavings);
+        if (elements.managerTimeSaved) elements.managerTimeSaved.textContent = this.formatCurrency(results.managerTimeSavings);
+        if (elements.productivityGains) elements.productivityGains.textContent = this.formatCurrency(results.productivityGains);
+        if (elements.programCost) elements.programCost.textContent = this.formatCurrency(results.programCost);
+        if (elements.netBenefit) elements.netBenefit.textContent = this.formatCurrency(results.netBenefit);
+        if (elements.roiPercent) elements.roiPercent.textContent = results.roiPercent + '%';
+    }
+    
+    // Format currency with Australian formatting
+    formatCurrency(amount) {
+        return '$' + this.formatNumber(amount, 0);
+    }
+    
+    // Format number with thousands separators (Australian style)
+    formatNumber(number, decimals = 0) {
+        return number.toLocaleString('en-AU', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+        });
+    }
+}
+
+// Initialize calculator when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new ROICalculator();
+    
+    // Add download button functionality (placeholder)
+    const downloadBtn = document.querySelector('.download-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            alert('PDF download functionality would be implemented here');
+        });
+    }
+});
+
+// Add input formatting for better UX
+document.addEventListener('DOMContentLoaded', function() {
+    // Format salary inputs as user types
+    const salaryInputs = ['avgSalary', 'avgManagerSalary'];
+    salaryInputs.forEach(inputId => {
+        const element = document.getElementById(inputId);
+        if (element) {
+            element.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value) {
+                    // Add thousands separators as user types
+                    value = parseInt(value).toLocaleString('en-AU');
+                    e.target.value = value;
+                }
+            });
+        }
+    });
+    
+    // Format percentage inputs
+    const percentInputs = ['turnoverRate', 'absenteeismRate'];
+    percentInputs.forEach(inputId => {
+        const element = document.getElementById(inputId);
+        if (element) {
+            element.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9.]/g, '');
+                // Limit to one decimal place
+                const parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts[1];
+                }
+                if (parts[1] && parts[1].length > 1) {
+                    value = parts[0] + '.' + parts[1].substring(0, 1);
+                }
+                e.target.value = value;
+            });
+        }
+    });
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator - Return on Investment</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">What's the return on investment?</h1>
+            <p class="subtitle">
+                Building the business case for financial wellness programs starts with quantifying their value.
+                Calculate the potential savings from reduced turnover, absenteeism, and improved productivity
+                when you support employees with financial stress through Prospr by Seedli.
+            </p>
+        </header>
+
+        <div class="calculator-layout">
+            <div class="inputs-section">
+                <div class="input-group">
+                    <div class="section-header">
+                        <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <h2 class="section-title">Calculate Turnover Savings</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="employees" class="form-label">Number of employees</label>
+                        <input type="text" id="employees" class="form-input" placeholder="Enter number of employees" value="500">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avgSalary" class="form-label">Average annual salary</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="avgSalary" class="form-input with-prefix" placeholder="82160" value="82160">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-with-tooltip">
+                            <label for="turnoverRate" class="form-label">Turnover rate (%)</label>
+                            <div class="tooltip-wrapper">
+                                <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <path d="M12 17h.01"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" id="turnoverRate" class="form-input with-suffix" placeholder="0.0" value="10.1">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="section-header">
+                        <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                        <h2 class="section-title">Calculate Productivity Savings</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="managers" class="form-label">Number of supervisors / managers</label>
+                        <input type="text" id="managers" class="form-input" placeholder="Enter number of managers" value="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avgManagerSalary" class="form-label">Average manager annual salary</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="avgManagerSalary" class="form-input with-prefix" placeholder="85280" value="85280">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-with-tooltip">
+                            <label for="absenteeismRate" class="form-label">Absenteeism rate (%)</label>
+                            <div class="tooltip-wrapper">
+                                <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <path d="M12 17h.01"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" id="absenteeismRate" class="form-input with-suffix" placeholder="0.0" value="2.2">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="total-return-card">
+                    <div class="return-header">
+                        <span class="dollar-sign">$</span>
+                        <span class="return-label">Projected Total Annual Return</span>
+                    </div>
+                    <div class="return-amount" id="totalReturn">$878,426</div>
+                    <p class="return-subtitle">Based on industry benchmarks and your company metrics</p>
+                    <button class="download-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Results as PDF
+                    </button>
+                </div>
+
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Keep your team healthy and engaged</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="turnoverSavings">$165,963</div>
+                        <div class="benefit-label">Reduced annual cost of turnover</div>
+                        <p class="benefit-description">Savings from reduced recruitment and training costs when financial wellness reduces employee turnover</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Reduce unplanned/sick leave</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="absenteeismSavings">$46,996</div>
+                        <div class="benefit-label">Reduced annual cost of absenteeism</div>
+                        <p class="benefit-description">Savings from reduced sick days and unplanned absences when employees have better financial wellness</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <polyline points="12,7 12,12 15,15"></polyline>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Give your managers their time back</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="managerTimeSaved">$8,187</div>
+                        <div class="benefit-label">Annual manager time saved</div>
+                        <p class="benefit-description">Time savings when managers spend less time dealing with financial stress-related employee issues</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-header">
+                            <svg class="benefit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="benefit-title">Productivity uplift</h3>
+                                <div class="benefit-tooltip">
+                                    <svg class="help-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="benefit-amount" id="productivityGains">$657,280</div>
+                        <div class="benefit-label">Annual productivity gains</div>
+                        <p class="benefit-description">Increased productivity when employees are less distracted by financial stress and worries</p>
+                    </div>
+                </div>
+
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-label">Program Cost (inc. GST)</div>
+                        <div class="summary-amount" id="programCost">$275,000</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Net Benefit</div>
+                        <div class="summary-amount" id="netBenefit">$603,426</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">ROI %</div>
+                        <div class="summary-amount" id="roiPercent">219%</div>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <p>This calculator provides indicative results only, based on industry benchmarks (AMP Financial Wellness Report, PwC, Deloitte). Calculations use typical scenario assumptions including 40% program participation rate, turnover replacement cost at 50% of salary, and an absenteeism disruption factor of 1.3. Program costs include 10% GST. Actual results may vary.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/app.js"></script>
+</body>
+</html>

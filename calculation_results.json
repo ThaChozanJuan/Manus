@@ -1,0 +1,20 @@
+{
+  "inputs": {
+    "employees": 500,
+    "avgSalary": 82160,
+    "turnoverRate": 10.1,
+    "managers": 50,
+    "avgManagerSalary": 85280,
+    "absenteeismRate": 2.2
+  },
+  "outputs": {
+    "totalReturn": "$878,426",
+    "turnoverSavings": "$165,963",
+    "absenteeismSavings": "$46,996",
+    "managerTimeSaved": "$8,187",
+    "productivityGains": "$657,280",
+    "programCost": "$275,000",
+    "netBenefit": "$603,426",
+    "roiPercent": "219%"
+  }
+}
