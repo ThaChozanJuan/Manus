@@ -1,8 +1,5 @@
-// Seedli ROI Calculator — plain JS, no external dependencies.
-// - AUD formatting (en-AU), instant updates.
-// - Working PDF button (window.print) with print CSS.
-// - Accessible, clickable info bubbles with aria-expanded.
-// - Exact formulas: see calc().
+// Seedli ROI Calculator — stable layout, brand colours, PDF, tooltips.
+// Fixed: removed fixed-fee input; cost now = priceUsed * adopters.
 
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -14,15 +11,13 @@
       style:'currency', currency:'AUD', maximumFractionDigits:0
     });
 
-  function getNum(id, dflt=0){
+  const getNum = (id, dflt=0) => {
     const el = $(id);
     if(!el) return dflt;
-    // Strip any stray symbols/commas
     const v = parseFloat((el.value||'').toString().replace(/[^\d.]/g,''));
     return Number.isFinite(v) ? v : dflt;
-  }
-
-  function setText(id, text){ const el = $(id); if(el) el.textContent = text; }
+  };
+  const setText = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
 
   function calc(){
     const emp     = getNum('employees', 0);
@@ -32,16 +27,16 @@
     const adopt   = getNum('adoptionPct', 0)   / 100;
     const price   = getNum('pricePerEmp', 0);
     const gstIncl = q('#gstIncl')?.checked ?? true;
-    const fixed   = getNum('fixedFee', 0);
 
-    // Ex-GST for ROI comparison if checkbox is ticked
+    // Ex-GST for ROI comparison if checkbox ticked
     const priceUsed = gstIncl ? (price / 1.10) : price;
+
     const stressPerEmp = salary * loss;
     const savePerEmp   = stressPerEmp * red;
     const adopters     = emp * adopt;
 
     const annualSavings = savePerEmp * adopters;
-    const programCost   = (priceUsed * adopters) + fixed;
+    const programCost   = (priceUsed * adopters);   // no fixed fee
     const net           = annualSavings - programCost;
     const roiPct        = programCost > 0 ? (net / programCost) * 100 : 0;
     const beAdopt       = (priceUsed > 0 && savePerEmp > 0) ? (priceUsed / savePerEmp) * 100 : NaN;
@@ -52,11 +47,10 @@
     setText('roiPct',    `${Math.round(roiPct)}% ROI`);
     setText('breakeven', Number.isFinite(beAdopt) ? `${beAdopt.toFixed(1)}%` : '—');
 
-    // cost note
     const note = $('costNote');
     if (note) note.textContent = gstIncl
-      ? 'Ex-GST (price ÷ 1.10 × adopters + fixed)'
-      : 'Adopters × price + fixed';
+      ? 'Ex-GST (price ÷ 1.10 × adopters)'
+      : 'Adopters × price';
   }
 
   function wireInputs(){
@@ -76,7 +70,6 @@
   }
 
   function wireTooltips(){
-    // toggle current, close others
     qa('.kbox .info').forEach(btn=>{
       btn.addEventListener('click', (e)=>{
         e.stopPropagation();
@@ -98,16 +91,11 @@
     });
   }
 
-  // Init
   wireInputs();
   wireTooltips();
   wirePDF();
   calc();
 
-  // --- Acceptance sanity with defaults (should render):
-  // Annual Savings = $79,200
-  // Program Cost   = $36,364
-  // Net ROI        = $42,836
-  // ROI %          = 118%
-  // Break-even     = 45.9%
+  // Acceptance sanity (defaults):
+  // Savings $79,200 | Cost $36,364 | Net $42,836 | ROI 118% | Break-even 45.9%
 })();
