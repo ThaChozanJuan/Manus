@@ -7,8 +7,8 @@
   <meta name="description" content="Estimate the annual return from Seedli’s financial wellbeing program. Adjust assumptions and see savings, costs, and ROI instantly." />
   <meta name="theme-color" content="#0E8A50" />
   <link rel="stylesheet" href="assets/styles.css" />
-  <!-- Print only: tidy PDF output -->
   <style>
+    /* Print: clean PDF */
     @media print{
       .no-print, .actions, .embed-note { display:none !important; }
       @page { margin: 12mm; }
@@ -18,17 +18,22 @@
   </style>
 </head>
 <body>
+  <header class="site-head no-print">
+    <!-- Drop your logo file at /assets/seedli-logo.svg -->
+    <img class="brand" src="assets/seedli-logo.svg" alt="Seedli" />
+  </header>
+
   <main class="wrap" aria-labelledby="page-title">
     <header class="page-head">
       <h1 id="page-title">What’s the return on investment?</h1>
-      <div class="actions no-print">
+      <div class="actions">
         <button id="pdfBtn" class="btn">Download results as PDF</button>
       </div>
     </header>
 
     <section class="grid">
       <!-- Inputs -->
-      <article class="card half" aria-labelledby="inputs-title">
+      <article class="card left" aria-labelledby="inputs-title">
         <h2 id="inputs-title" class="card-title">Inputs</h2>
 
         <label for="employees">Employees</label>
@@ -74,19 +79,17 @@
             </label>
           </div>
         </div>
-
-        <label for="fixedFee">Fixed annual platform/licence fee $ (optional)</label>
-        <input id="fixedFee" type="number" inputmode="numeric" value="0" min="0" step="100" />
       </article>
 
       <!-- Results -->
-      <article class="card half kpis" aria-labelledby="results-title">
+      <article class="card right kpis" aria-labelledby="results-title">
         <div class="kpis-head">
           <h2 id="results-title" class="card-title">Results</h2>
         </div>
 
+        <!-- Stable, equal-height KPI tiles -->
         <div class="out">
-          <section class="kbox" data-field="savings">
+          <section class="kbox">
             <div class="tag">Projected Total Annual Return
               <button class="info" aria-expanded="false" aria-controls="tip-savings" aria-label="About Projected Total Annual Return">i</button>
             </div>
@@ -98,18 +101,18 @@
             </div>
           </section>
 
-          <section class="kbox" data-field="cost">
+          <section class="kbox">
             <div class="tag">Program Cost
               <button class="info" aria-expanded="false" aria-controls="tip-cost" aria-label="About Program Cost">i</button>
             </div>
             <p id="cost" class="kval" role="status" aria-live="polite">$0</p>
-            <p id="costNote" class="kdesc">Ex-GST (adopters × price)</p>
+            <p id="costNote" class="kdesc">Ex-GST (price ÷ 1.10 × adopters)</p>
             <div class="tip" id="tip-cost" role="tooltip">
               Cost uses <b>ex-GST</b> for apples-to-apples ROI. If “includes GST” is ticked, priceUsed = price ÷ 1.10.
             </div>
           </section>
 
-          <section class="kbox" data-field="net">
+          <section class="kbox">
             <div class="tag">Net ROI
               <button class="info" aria-expanded="false" aria-controls="tip-net" aria-label="About Net ROI">i</button>
             </div>
@@ -120,7 +123,7 @@
             </div>
           </section>
 
-          <section class="kbox" data-field="breakeven">
+          <section class="kbox">
             <div class="tag">Break-even Adoption
               <button class="info" aria-expanded="false" aria-controls="tip-break" aria-label="About Break-even Adoption">i</button>
             </div>
@@ -140,7 +143,7 @@
           <li><b>Stress cost/employee</b> = salary × loss%.</li>
           <li><b>Savings/employee</b> = stress cost × reduction%.</li>
           <li><b>Annual savings</b> = savings/employee × employees × adoption%.</li>
-          <li><b>Program cost</b> = price<small>(ex-GST)</small> × adopters + fixed fee.</li>
+          <li><b>Program cost</b> = price<small>(ex-GST)</small> × adopters.</li>
           <li><b>Net ROI</b> = savings − cost; <b>ROI%</b> = net ÷ cost.</li>
         </ol>
         <p class="muted small embed-note">Figures are estimates in AUD. Adjust assumptions to match your context.</p>
