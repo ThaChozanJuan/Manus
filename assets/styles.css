@@ -23,15 +23,18 @@ body{
 
 /* ===== Branding ===== */
 .site-head{
-  max-width:1080px; margin:16px auto 4px; padding:0 16px; display:flex; align-items:center;
+  max-width:1080px; margin:16px auto 6px; padding:0 16px; display:flex; align-items:center;
 }
-.brand{ height:28px; width:auto; display:block; }
+.brand{ height:26px; width:auto; display:block; }
 
-/* ===== Layout ===== */
-.wrap{max-width:1080px;margin:8px auto 32px;padding:0 16px}
-.page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
-.page-head h1{margin:0;font-size:28px;color:var(--seedli-green);letter-spacing:.2px}
+/* ===== Page header ===== */
+.wrap{max-width:1080px;margin:0 auto 32px;padding:0 16px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.page-head h1{margin:0 0 8px;font-size:28px;color:var(--seedli-green);letter-spacing:.2px}
+.lead{margin:2px 0 0;color:var(--muted)}
+.title-underline{display:block;width:72px;height:4px;border-radius:3px;background:var(--seedli-green);}
 
+/* ===== Grid & cards ===== */
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .card{
   background:var(--card);
@@ -42,7 +45,6 @@ body{
 }
 .card-title{margin:0 0 8px;font-size:18px;color:var(--seedli-green)}
 
-/* columns */
 .left{grid-column:span 12}
 .right{grid-column:span 12}
 .span12{grid-column:span 12}
@@ -52,7 +54,11 @@ body{
 }
 
 /* ===== Inputs ===== */
-label{display:block;font-weight:700;margin:10px 0 6px}
+.field{position:relative}
+.field + .field{margin-top:12px}
+.field-label{display:flex;align-items:center;gap:8px}
+label{display:inline-block;font-weight:800;margin:10px 0 6px}
+
 input[type="number"]{
   width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:#fff;
 }
@@ -61,36 +67,32 @@ input[type="number"]:focus, .info:focus, .btn:focus{
 }
 .row{display:flex;gap:12px}
 .col{flex:1}
-.col-checkbox{display:flex;align-items:center}
-.checkwrap{display:flex;align-items:center;gap:8px;margin-top:30px}
 .muted{color:var(--muted)}
 .small{font-size:12px}
+.lock-note{margin-top:8px}
 
 /* ===== Buttons ===== */
 .btn{
   background:var(--seedli-green);
-  color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:800;
+  color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:900;
   cursor:pointer;transition:background .15s ease, transform .04s ease
 }
 .btn:hover{background:var(--seedli-green-600)}
 .btn:active{transform:translateY(1px)}
 
-/* ===== KPIs ===== */
+/* ===== KPIs (2×2 grid) ===== */
 .kpis{background:var(--kpi-bg);border:1px solid var(--kpi-outline)}
-.kpis-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.kpis-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 
-/* 4 even tiles that never jump */
-.out{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
-  align-items:stretch;
+.out-2x2{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;
 }
-@media(max-width:900px){ .out{grid-template-columns:1fr 1fr} }
-@media(max-width:520px){ .out{grid-template-columns:1fr} }
+@media(max-width:640px){ .out-2x2{grid-template-columns:1fr} }
 
 .kbox{
   position:relative;background:#fff;border:1px dashed var(--kpi-outline);
   border-radius:12px;padding:16px;display:flex;flex-direction:column;
-  min-height:170px; /* Equal height across all tiles */
+  min-height:172px;
 }
 .tag{
   display:inline-flex;align-items:center;gap:8px;
@@ -100,27 +102,32 @@ input[type="number"]:focus, .info:focus, .btn:focus{
 .kval{
   margin:10px 0 0;
   font-size:30px;font-weight:900;line-height:1;
-  color:var(--seedli-green); /* brand number colour */
+  color:var(--seedli-green);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .kdesc{margin-top:6px;color:var(--muted);font-size:12px;min-height:16px}
 
-/* ===== Info bubbles (click to open) ===== */
+/* ===== Info bubbles (inputs + KPIs) ===== */
 .info{
   display:inline-flex;align-items:center;justify-content:center;
   width:18px;height:18px;border-radius:999px;background:#0A5233;color:#fff;
   font-size:12px;font-weight:800;cursor:pointer;border:0
 }
 .tip{
-  position:absolute;z-index:20;display:none;max-width:280px;
-  left:16px;top:46px;background:#111827;color:#fff;border-radius:10px;
+  position:absolute;z-index:20;display:none;max-width:320px;
+  left:0;top:38px;background:#111827;color:#fff;border-radius:10px;
   padding:10px 12px;font-size:13px;line-height:1.35;
   box-shadow:0 12px 32px rgba(0,0,0,.28)
 }
-.kbox.open .tip{display:block}
+.kbox .tip{left:16px;top:46px}
+.field.open .tip, .kbox.open .tip{display:block}
 .tip:before{
   content:"";position:absolute;top:-8px;left:14px;border:8px solid transparent;border-bottom-color:#111827
 }
 
-/* ===== “How this works” ===== */
+/* ===== “How this works” & disclosure ===== */
 .hiw{margin:0 0 8px 18px}
+.disclosure{
+  background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;
+  color:#344054;font-size:13px;line-height:1.45;
+}
