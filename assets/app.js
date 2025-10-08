@@ -1,6 +1,8 @@
-// Seedli ROI Calculator — “Best Outcome” model (v4)
+// Seedli ROI Calculator — Final polish (v5)
 // Channels: Productivity + Turnover + Absenteeism + Manager time
-// Cost = price × total employees (ex-GST). One-page A4 print with AU date. Presets + Advanced panel.
+// Cost = price × total employees (ex-GST). One-page A4 print with AU date.
+// Segmented presets (Conservative, Base, Confident). Info-bubble tooltips.
+// All numbers in AUD.
 
 (() => {
   const $  = (id) => document.getElementById(id);
@@ -51,8 +53,7 @@
     const managerPerEmp = (adoption > 0) ? managerTotal / (employees * adoption) : 0;
 
     // Totals
-    const perEmpSavings = prodPerEmp + turnoverPerEmp + absencePerEmp + managerPerEmp;
-    const weightedPerEmp = prodPerEmp + turnoverPerEmp + absencePerEmp; // (manager handled as total already)
+    const weightedPerEmp = prodPerEmp + turnoverPerEmp + absencePerEmp;
     const channelSavings = employees * adoption * weightedPerEmp + managerTotal;
 
     const cost = priceExGST * employees;
@@ -60,7 +61,7 @@
     const roi  = cost > 0 ? (net / cost) * 100 : 0;
 
     // Break-even adoption (%) – solve for adoption given cost and per-emp savings
-    const denom = weightedPerEmp + managerPerEmp; // managerPerEmp is already “per-emp”
+    const denom = weightedPerEmp + managerPerEmp;
     const be = denom > 0 ? (priceExGST / denom) * 100 : NaN;
 
     setText('savings', fmtAUD(channelSavings));
@@ -69,18 +70,20 @@
     setText('roiPct',  `${Math.round(roi)}% ROI`);
     setText('breakeven', Number.isFinite(be) ? `${Math.max(0, Math.min(100, be)).toFixed(1)}%` : '—');
 
-    // Nice breakdown
+    // Breakdown
     const b1 = fmtAUD(employees * adoption * prodPerEmp);
     const b2 = fmtAUD(employees * adoption * turnoverPerEmp);
     const b3 = fmtAUD(employees * adoption * absencePerEmp);
     const b4 = fmtAUD(managerTotal);
     setText('savingsBreakdown', `Includes Productivity ${b1} · Turnover ${b2} · Absenteeism ${b3} · Manager time ${b4}`);
+
     const note = $('costNote');
     if (note) note.textContent = PRICE_INCLUDES_GST
       ? 'Ex-GST (plan price ÷ 1.10 × total employees)'
       : 'Ex-GST (plan price × total employees)';
   }
 
+  // ---------- UI wiring ----------
   function wireInputs(){
     qa('input[type="number"]').forEach(el=>{
       el.addEventListener('input',  calc, { passive:true });
@@ -88,67 +91,98 @@
     });
   }
 
-  function wirePresets(){
-    const apply = (kind)=>{
-      // sensible, sales-ready defaults
-      if (kind === 'conservative'){
-        $('salary').value = 100000;
-        $('lossPct').value = 3.5;
-        $('reductionPct').value = 30;
-        $('adoptionPct').value = 50;
-
-        $('turnoverRate').value = 12;
-        $('turnoverReduction').value = 8;
-        $('replacementPct').value = 40;
-
-        $('daysAbsence').value = 3.0;
-        $('absenceReduction').value = 12;
-
-        $('managerRatio').value = 12;
-        $('mgrHours').value = 0.7;
-        $('mgrSalary').value = 135000;
-      } else if (kind === 'base'){
-        $('salary').value = 110000;
-        $('lossPct').value = 4.0;
-        $('reductionPct').value = 30;
-        $('adoptionPct').value = 50;
-
-        $('turnoverRate').value = 15;
-        $('turnoverReduction').value = 10;
-        $('replacementPct').value = 50;
-
-        $('daysAbsence').value = 4.0;
-        $('absenceReduction').value = 15;
-
-        $('managerRatio').value = 10;
-        $('mgrHours').value = 1.0;
-        $('mgrSalary').value = 140000;
-      } else if (kind === 'stretch'){
-        $('salary').value = 120000;
-        $('lossPct').value = 5.0;
-        $('reductionPct').value = 35;
-        $('adoptionPct').value = 60;
-
-        $('turnoverRate').value = 18;
-        $('turnoverReduction').value = 12;
-        $('replacementPct').value = 60;
-
-        $('daysAbsence').value = 4.5;
-        $('absenceReduction').value = 18;
-
-        $('managerRatio').value = 9;
-        $('mgrHours').value = 1.2;
-        $('mgrSalary').value = 145000;
-      }
-      qa('.chip').forEach(c=>c.classList.remove('chip--active'));
-      qa(`.chip[data-preset="${kind}"]`).forEach(c=>c.classList.add('chip--active'));
-      calc();
-    };
-
-    qa('.chip').forEach(btn=>{
-      btn.addEventListener('click', ()=>apply(btn.dataset.preset));
+  function wireTooltips(){
+    // open/close on click
+    qa('.info').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const holder = btn.closest('.field') || btn.closest('.kbox');
+        const open = holder.classList.contains('open');
+        qa('.field.open,.kbox.open').forEach(x=>x.classList.remove('open'));
+        qa('.info[aria-expanded="true"]').forEach(x=>x.setAttribute('aria-expanded','false'));
+        if (!open){ holder.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+      });
     });
-    apply('base'); // default
+    // global close
+    document.addEventListener('click', ()=>{
+      qa('.field.open,.kbox.open').forEach(x=>x.classList.remove('open'));
+      qa('.info[aria-expanded="true"]').forEach(x=>x.setAttribute('aria-expanded','false'));
+    });
+    // esc close
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape'){
+        qa('.field.open,.kbox.open').forEach(x=>x.classList.remove('open'));
+        qa('.info[aria-expanded="true"]').forEach(x=>x.setAttribute('aria-expanded','false'));
+      }
+    });
+  }
+
+  function applyPreset(kind){
+    // Preset values (can be tuned later)
+    if (kind === 'conservative'){
+      $('salary').value = 100000;
+      $('lossPct').value = 3.5;
+      $('reductionPct').value = 30;
+      $('adoptionPct').value = 50;
+
+      $('turnoverRate').value = 12;
+      $('turnoverReduction').value = 8;
+      $('replacementPct').value = 40;
+
+      $('daysAbsence').value = 3.0;
+      $('absenceReduction').value = 12;
+
+      $('managerRatio').value = 12;
+      $('mgrHours').value = 0.7;
+      $('mgrSalary').value = 135000;
+    } else if (kind === 'base'){
+      $('salary').value = 110000;
+      $('lossPct').value = 4.0;
+      $('reductionPct').value = 30;
+      $('adoptionPct').value = 50;
+
+      $('turnoverRate').value = 15;
+      $('turnoverReduction').value = 10;
+      $('replacementPct').value = 50;
+
+      $('daysAbsence').value = 4.0;
+      $('absenceReduction').value = 15;
+
+      $('managerRatio').value = 10;
+      $('mgrHours').value = 1.0;
+      $('mgrSalary').value = 140000;
+    } else { // confident
+      $('salary').value = 120000;
+      $('lossPct').value = 5.0;
+      $('reductionPct').value = 35;
+      $('adoptionPct').value = 60;
+
+      $('turnoverRate').value = 18;
+      $('turnoverReduction').value = 12;
+      $('replacementPct').value = 60;
+
+      $('daysAbsence').value = 4.5;
+      $('absenceReduction').value = 18;
+
+      $('managerRatio').value = 9;
+      $('mgrHours').value = 1.2;
+      $('mgrSalary').value = 145000;
+    }
+    qa('.segment').forEach(b=>{ b.classList.toggle('is-active', b.dataset.preset===kind); b.setAttribute('aria-checked', String(b.dataset.preset===kind)); });
+    calc();
+  }
+
+  function wirePresets(){
+    qa('.segment').forEach(btn=>{
+      btn.addEventListener('click', ()=> applyPreset(btn.dataset.preset));
+      btn.addEventListener('keydown', (e)=>{
+        const order = ['conservative','base','confident'];
+        const cur = order.findIndex(k => qa('.segment.is-active')[0]?.dataset.preset === k);
+        if (e.key === 'ArrowRight'){ e.preventDefault(); applyPreset(order[Math.min(order.length-1, cur+1)]); }
+        if (e.key === 'ArrowLeft'){  e.preventDefault(); applyPreset(order[Math.max(0, cur-1)]); }
+      });
+    });
+    applyPreset('base'); // default
   }
 
   function wireAdvanced(){
@@ -172,6 +206,7 @@
   }
 
   wireInputs();
+  wireTooltips();
   wirePresets();
   wireAdvanced();
   wirePDF();
