@@ -8,20 +8,31 @@
   <meta name="theme-color" content="#0E8A50" />
   <link rel="stylesheet" href="assets/styles.css" />
   <style>
+    @page { size: A4; margin: 10mm; }
     @media print{
-      .no-print, .actions, .embed-note { display:none !important; }
-      @page { margin: 12mm; }
+      .no-print, .info, .tip { display:none !important; }
       body{ background:#fff !important; }
+      .wrap{ max-width: none; padding: 0; }
       .card{ box-shadow:none !important; border-color:#e5e7eb !important; }
+      .print-only{ display:block !important; }
+      .print-compact *{ font-size: 12px !important; }
+      .print-compact h1{ font-size: 18px !important; }
+      .print-compact .kval{ font-size: 20px !important; }
+      .print-compact .card{ padding:10px !important; }
+      .print-compact .out-2x2{ gap:10px !important; }
     }
+    .print-only{ display:none; }
   </style>
 </head>
 <body>
-  <!-- Brand -->
   <header class="site-head no-print">
-    <!-- Upload your logo as /assets/seedli-logo.svg for crisp rendering -->
     <img class="brand" src="assets/seedli-logo.svg" alt="Seedli" onerror="this.style.display='none'"/>
   </header>
+
+  <div class="print-only print-header">
+    <div><strong>Seedli — Financial Wellbeing ROI Calculator</strong></div>
+    <div id="printDate"></div>
+  </div>
 
   <main class="wrap" aria-labelledby="page-title">
     <header class="page-head">
@@ -30,88 +41,70 @@
         <span class="title-underline" aria-hidden="true"></span>
         <p class="lead">Build the business case for financial wellbeing with evidence-based assumptions and instant ROI.</p>
       </div>
-      <div class="actions">
+      <div class="actions no-print">
         <button id="pdfBtn" class="btn">Download results as PDF</button>
       </div>
     </header>
 
     <section class="grid">
-      <!-- Inputs -->
       <article class="card left" aria-labelledby="inputs-title">
         <h2 id="inputs-title" class="card-title">Inputs</h2>
 
-        <div class="field">
-          <div class="field-label">
-            <label for="employees">Employees</label>
-            <button class="info" aria-label="More info about Employees" aria-expanded="false" aria-controls="tip-employees">i</button>
+        <div class="inputs-grid">
+          <div class="field">
+            <div class="field-label">
+              <label for="employees">Employees</label>
+              <button class="info" aria-label="More info about Employees" aria-expanded="false" aria-controls="tip-employees">i</button>
+            </div>
+            <div class="tip" id="tip-employees" role="tooltip">Total staff in scope. Use headcount, not FTE.</div>
+            <input id="employees" type="number" inputmode="numeric" value="200" min="1" step="1" />
           </div>
-          <div class="tip" id="tip-employees" role="tooltip">
-            Total staff in scope. Use headcount, not FTE.
-          </div>
-          <input id="employees" type="number" inputmode="numeric" value="200" min="1" step="1" />
-        </div>
 
-        <div class="row">
-          <div class="col field">
+          <div class="field">
             <div class="field-label">
               <label for="salary">Avg loaded salary (incl. on-costs) $</label>
               <button class="info" aria-label="More info about average salary" aria-expanded="false" aria-controls="tip-salary">i</button>
             </div>
-            <div class="tip" id="tip-salary" role="tooltip">
-              On-costs include super, payroll tax, leave and insurances.
-            </div>
+            <div class="tip" id="tip-salary" role="tooltip">On-costs include super, payroll tax, leave and insurances.</div>
             <input id="salary" type="number" inputmode="numeric" value="110000" min="0" step="500" />
           </div>
 
-          <div class="col field">
+          <div class="field">
             <div class="field-label">
               <label for="lossPct">Productivity loss from financial stress %</label>
               <button class="info" aria-label="More info about productivity loss" aria-expanded="false" aria-controls="tip-loss">i</button>
             </div>
-            <div class="tip" id="tip-loss" role="tooltip">
-              Estimated % of work time/value lost (absenteeism + presenteeism).
-            </div>
+            <div class="tip" id="tip-loss" role="tooltip">Estimated % of work time/value lost (absenteeism + presenteeism).</div>
             <input id="lossPct" type="number" inputmode="decimal" value="3.0" min="0" max="20" step="0.1" />
           </div>
-        </div>
 
-        <div class="row">
-          <div class="col field">
+          <div class="field">
             <div class="field-label">
               <label for="reductionPct">Reduction with program %</label>
               <button class="info" aria-label="More info about reduction with program" aria-expanded="false" aria-controls="tip-reduction">i</button>
             </div>
-            <div class="tip" id="tip-reduction" role="tooltip">
-              Likely reduction in the stress-related loss when Seedli is in place.
-            </div>
+            <div class="tip" id="tip-reduction" role="tooltip">Likely reduction in the stress-related loss when Seedli is in place.</div>
             <input id="reductionPct" type="number" inputmode="numeric" value="30" min="0" max="100" step="1" />
           </div>
 
-          <div class="col field">
+          <div class="field">
             <div class="field-label">
               <label for="adoptionPct">Adoption / activation %</label>
               <button class="info" aria-label="More info about adoption" aria-expanded="false" aria-controls="tip-adoption">i</button>
             </div>
-            <div class="tip" id="tip-adoption" role="tooltip">
-              Share of employees who actively use the program.
-            </div>
+            <div class="tip" id="tip-adoption" role="tooltip">Share of employees who actively use the program.</div>
             <input id="adoptionPct" type="number" inputmode="numeric" value="40" min="0" max="100" step="1" />
           </div>
         </div>
 
-        <!-- Pricing is now fixed in logic; not editable here -->
-        <p class="muted small lock-note">
-          Pricing uses Seedli’s current plan (ex-GST for ROI comparison).
-        </p>
+        <p class="muted small lock-note">Pricing uses Seedli’s current plan (ex-GST for ROI comparison).</p>
       </article>
 
-      <!-- Results -->
       <article class="card right kpis" aria-labelledby="results-title">
         <div class="kpis-head">
           <h2 id="results-title" class="card-title">Results</h2>
         </div>
 
-        <!-- 2 × 2 stable grid -->
         <div class="out out-2x2">
           <section class="kbox">
             <div class="tag">Projected Total Annual Return
@@ -130,9 +123,9 @@
               <button class="info" aria-expanded="false" aria-controls="tip-cost" aria-label="About Program Cost">i</button>
             </div>
             <p id="cost" class="kval" role="status" aria-live="polite">$0</p>
-            <p id="costNote" class="kdesc">Ex-GST (plan price × adopters)</p>
+            <p id="costNote" class="kdesc">Ex-GST (plan price × total employees)</p>
             <div class="tip" id="tip-cost" role="tooltip">
-              Cost uses <b>ex-GST</b> for apples-to-apples ROI. Pricing is fixed to Seedli’s plan per-employee rate.
+              Cost uses <b>ex-GST</b> for apples-to-apples ROI. Pricing is fixed to Seedli’s plan per-employee rate for the whole company.
             </div>
           </section>
 
@@ -143,7 +136,7 @@
             <p id="net" class="kval" role="status" aria-live="polite">$0</p>
             <p id="roiPct" class="kdesc">0% ROI</p>
             <div class="tip" id="tip-net" role="tooltip">
-              <b>Net</b> = Annual Savings − Program Cost. <b>ROI%</b> = Net ÷ Cost.
+              <b>Net</b> = Annual Savings − Program Cost. Because cost is fixed to total employees, <b>ROI%</b> increases with adoption.
             </div>
           </section>
 
@@ -160,19 +153,17 @@
         </div>
       </article>
 
-      <!-- Notes -->
       <aside class="card span12">
         <h2 class="card-title">How this works</h2>
         <ol class="hiw">
           <li><b>Stress cost/employee</b> = salary × loss%.</li>
           <li><b>Savings/employee</b> = stress cost × reduction%.</li>
           <li><b>Annual savings</b> = savings/employee × employees × adoption%.</li>
-          <li><b>Program cost</b> = plan price<small>(ex-GST)</small> × adopters.</li>
+          <li><b>Program cost</b> = plan price<small>(ex-GST)</small> × <b>total employees</b>.</li>
           <li><b>Net ROI</b> = savings − cost; <b>ROI%</b> = net ÷ cost.</li>
         </ol>
       </aside>
 
-      <!-- Disclosure -->
       <aside class="disclosure span12">
         <p><b>Important:</b> This calculator provides directional estimates only and is not financial advice. Results depend on your assumptions and context. All values shown in AUD; ROI uses ex-GST pricing for comparability.</p>
       </aside>
