@@ -1,7 +1,7 @@
 /* ===== Seedli tokens ===== */
 :root{
   --seedli-green:#0E8A50;
-  --seedli-green-600:#0B6F40;  /* hover */
+  --seedli-green-600:#0B6F40;
   --bg:#F6F9F7;
   --ink:#0B1520;
   --muted:#667085;
@@ -14,18 +14,14 @@
 /* ===== Base ===== */
 *{box-sizing:border-box}
 html,body{height:100%}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--ink);
-  background:var(--bg);
-}
+body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink); background:var(--bg); }
 
 /* ===== Branding ===== */
-.site-head{
-  max-width:1080px; margin:16px auto 6px; padding:0 16px; display:flex; align-items:center;
-}
+.site-head{ max-width:1080px; margin:16px auto 6px; padding:0 16px; display:flex; align-items:center; }
 .brand{ height:26px; width:auto; display:block; }
+
+/* print header */
+.print-header{ display:flex; justify-content:space-between; align-items:center; margin:0 0 8px; font-size:12px; }
 
 /* ===== Page header ===== */
 .wrap{max-width:1080px;margin:0 auto 32px;padding:0 16px}
@@ -36,13 +32,7 @@ body{
 
 /* ===== Grid & cards ===== */
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  box-shadow:0 8px 24px rgba(0,0,0,.06);
-  padding:16px;
-}
+.card{ background:var(--card); border:1px solid var(--border); border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.06); padding:16px; }
 .card-title{margin:0 0 8px;font-size:18px;color:var(--seedli-green)}
 
 .left{grid-column:span 12}
@@ -53,9 +43,15 @@ body{
   .right{grid-column:span 6}
 }
 
-/* ===== Inputs ===== */
+/* ===== Inputs (aligned grid) ===== */
+.inputs-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+@media(max-width:720px){ .inputs-grid{ grid-template-columns: 1fr; } }
+
 .field{position:relative}
-.field + .field{margin-top:12px}
 .field-label{display:flex;align-items:center;gap:8px}
 label{display:inline-block;font-weight:800;margin:10px 0 6px}
 
@@ -65,11 +61,10 @@ input[type="number"]{
 input[type="number"]:focus, .info:focus, .btn:focus{
   outline:3px solid rgba(14,138,80,.25); outline-offset:2px; box-shadow:none;
 }
-.row{display:flex;gap:12px}
-.col{flex:1}
+
 .muted{color:var(--muted)}
 .small{font-size:12px}
-.lock-note{margin-top:8px}
+.lock-note{margin-top:10px}
 
 /* ===== Buttons ===== */
 .btn{
