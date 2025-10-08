@@ -1,15 +1,13 @@
-// Seedli ROI Calculator — v2
-// - 2×2 results grid, locked tile heights
-// - Input info tooltips (i) + KPI tooltips
-// - Removed editable price; logic uses fixed Seedli plan rate (see constants)
-// - AUD formatting, clean PDF, accessible updates
+// Seedli ROI Calculator — v3.1
+// Cost = plan price × TOTAL EMPLOYEES (ex-GST). ROI% varies with adoption.
+// One-page A4 print, AU date, aligned inputs, 2×2 KPI grid.
 
 (() => {
   const $ = (id) => document.getElementById(id);
   const q = (sel, root=document) => root.querySelector(sel);
   const qa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  // ---------- Brand pricing (edit here if your plan changes) ----------
+  // ---------- Brand pricing (edit here if plan changes) ----------
   const PRICE_PER_EMP = 500;        // Seedli plan, per employee per year (INC GST)
   const PRICE_INCLUDES_GST = true;  // true = includes GST; ROI math uses ex-GST
 
@@ -18,33 +16,39 @@
       style:'currency', currency:'AUD', maximumFractionDigits:0
     });
 
-  function getNum(id, dflt=0){
-    const el = $(id);
-    if(!el) return dflt;
+  function num(id, d=0){
+    const el = $(id); if(!el) return d;
     const v = parseFloat((el.value||'').toString().replace(/[^\d.]/g,''));
-    return Number.isFinite(v) ? v : dflt;
+    return Number.isFinite(v) ? v : d;
   }
-  function setText(id, text){ const el = $(id); if(el) el.textContent = text; }
+  const setText = (id, t) => { const el = $(id); if (el) el.textContent = t; };
 
   function calc(){
-    const emp     = getNum('employees', 0);
-    const salary  = getNum('salary', 0);
-    const loss    = getNum('lossPct', 0)       / 100;
-    const red     = getNum('reductionPct', 0)  / 100;
-    const adopt   = getNum('adoptionPct', 0)   / 100;
+    const employees = num('employees', 0);
+    const salary    = num('salary', 0);
+    const lossPct   = num('lossPct', 0)      / 100;
+    const reducPct  = num('reductionPct', 0) / 100;
+    const adoptPct  = num('adoptionPct', 0)  / 100;
 
+    // Plan price used in ROI (ex-GST if PRICE_INCLUDES_GST)
     const priceUsed = PRICE_INCLUDES_GST ? (PRICE_PER_EMP / 1.10) : PRICE_PER_EMP;
 
-    const stressPerEmp = salary * loss;
-    const savePerEmp   = stressPerEmp * red;
-    const adopters     = emp * adopt;
+    // Per-employee economics
+    const stressPerEmp = salary * lossPct;
+    const savePerEmp   = stressPerEmp * reducPct;
 
-    const annualSavings = savePerEmp * adopters;
-    const programCost   = priceUsed * adopters;
+    // Totals
+    const annualSavings = savePerEmp * employees * adoptPct;
+    const programCost   = priceUsed   * employees;           // <-- FIX: total headcount
     const net           = annualSavings - programCost;
     const roiPct        = programCost > 0 ? (net / programCost) * 100 : 0;
-    const beAdopt       = (priceUsed > 0 && savePerEmp > 0) ? (priceUsed / savePerEmp) * 100 : NaN;
 
+    // Break-even adoption (% of staff required)
+    const beAdopt = (priceUsed > 0 && savePerEmp > 0)
+      ? (priceUsed / savePerEmp) * 100
+      : NaN;
+
+    // UI
     setText('savings',   fmtAUD(annualSavings));
     setText('cost',      fmtAUD(programCost));
     setText('net',       fmtAUD(net));
@@ -53,24 +57,14 @@
 
     const note = $('costNote');
     if (note) note.textContent = PRICE_INCLUDES_GST
-      ? 'Ex-GST (plan price ÷ 1.10 × adopters)'
-      : 'Ex-GST (plan price × adopters)';
+      ? 'Ex-GST (plan price ÷ 1.10 × total employees)'
+      : 'Ex-GST (plan price × total employees)';
   }
 
-  // --------- wiring
   function wireInputs(){
     qa('input[type="number"]').forEach(el=>{
-      el.addEventListener('input', calc, { passive:true });
+      el.addEventListener('input',  calc, { passive:true });
       el.addEventListener('change', calc);
-    });
-  }
-
-  function wirePDF(){
-    const btn = $('pdfBtn');
-    if (!btn) return;
-    btn.addEventListener('click', (e)=>{
-      e.preventDefault();
-      window.print();
     });
   }
 
@@ -83,13 +77,9 @@
         const open = field.classList.contains('open');
         qa('.field.open').forEach(f => f.classList.remove('open'));
         qa('.field .info[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded','false'));
-        if (!open){
-          field.classList.add('open');
-          btn.setAttribute('aria-expanded','true');
-        }
+        if (!open){ field.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
       });
     });
-
     // KPIs
     qa('.kbox .info').forEach(btn=>{
       btn.addEventListener('click', (e)=>{
@@ -98,13 +88,9 @@
         const open = box.classList.contains('open');
         qa('.kbox.open').forEach(b => b.classList.remove('open'));
         qa('.kbox .info[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded','false'));
-        if (!open){
-          box.classList.add('open');
-          btn.setAttribute('aria-expanded','true');
-        }
+        if (!open){ box.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
       });
     });
-
     // Global close
     document.addEventListener('click', ()=>{
       qa('.field.open').forEach(f => f.classList.remove('open'));
@@ -114,11 +100,23 @@
     });
   }
 
-  // init
+  function wirePDF(){
+    const btn = $('pdfBtn'); if (!btn) return;
+    const ph = document.getElementById('printDate');
+    if (ph) ph.textContent = new Date().toLocaleDateString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+    window.onbeforeprint = () => document.body.classList.add('print-compact');
+    window.onafterprint  = () => document.body.classList.remove('print-compact');
+
+    btn.addEventListener('click', (e)=>{ e.preventDefault(); window.print(); });
+  }
+
   wireInputs();
   wireTooltips();
   wirePDF();
   calc();
 
-  // Sanity with defaults (500 inc. GST): Savings $79,200 | Cost $36,364 | Net $42,836 | ROI 118% | Break-even 45.9%
+  // Quick sanity with defaults (200 emp / $110k / 3% loss / 30% reduction / 40% adoption):
+  // priceUsed = 454.55; cost = 200*454.55 = 90,909; savings = 110000*0.03*0.30*200*0.40 = 79200
+  // net = -11,709 ; ROI ≈ -13%
 })();
