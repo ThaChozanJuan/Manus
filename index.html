@@ -8,10 +8,10 @@
   <meta name="theme-color" content="#0E8A50" />
   <link rel="stylesheet" href="assets/styles.css" />
   <style>
-    /* guaranteed single-page A4 print */
+    /* one-page A4 print */
     @page { size: A4; margin: 10mm; }
     @media print{
-      .no-print, .segmented, .adv-toggle, .info, .tip { display:none !important; }
+      .no-print, .segmented, .adv-toggle, .adv, .info, .lock-note, .activation-line, .negative-hint { display:none !important; }
       body{ background:#fff !important; }
       .wrap{ max-width:none; padding:0; }
       .card{ box-shadow:none !important; border-color:#e5e7eb !important; }
@@ -22,6 +22,7 @@
       body.print-compact .card{ padding:10px !important; }
       body.print-compact .out-2x2{ gap:10px !important; }
       .avoid-break{ break-inside: avoid; page-break-inside: avoid; }
+      .exec-summary{display:flex !important;}
     }
     .print-only{ display:none; align-items:center; justify-content:space-between; margin:0 0 10px; }
   </style>
@@ -29,7 +30,7 @@
 <body>
   <!-- Brand header (web) -->
   <header class="site-head no-print">
-    <img class="brand" src="assets/seedli-logo.png" alt="Seedli" onerror="this.style.display='none'"/>
+    <img class="brand" id="brandLogo" src="assets/seedli-logo.png" alt="Seedli"/>
   </header>
 
   <!-- Brand header (print) -->
@@ -50,17 +51,26 @@
       </div>
     </header>
 
+    <!-- Executive summary row (print only) -->
+    <div class="exec-summary card avoid-break" style="display:none;">
+      <strong class="muted">Executive Summary:&nbsp;</strong>
+      <span id="sumSavings"></span>&nbsp;•&nbsp;
+      <span id="sumCost"></span>&nbsp;•&nbsp;
+      <span id="sumNet"></span>&nbsp;•&nbsp;
+      <span id="sumRoi"></span>
+    </div>
+
     <section class="grid">
       <!-- Inputs -->
       <article class="card avoid-break left" aria-labelledby="inputs-title">
         <div class="input-head">
           <h2 id="inputs-title" class="card-title">Inputs</h2>
 
-          <!-- Segmented slider -->
+          <!-- Segmented presets -->
           <div class="segmented" role="radiogroup" aria-label="Scenario presets">
-            <button class="segment" role="radio" aria-checked="false" data-preset="conservative" title="Lower loss, moderate adoption">Conservative</button>
-            <button class="segment is-active" role="radio" aria-checked="true" data-preset="base" title="Evidence-based default">Base</button>
-            <button class="segment" role="radio" aria-checked="false" data-preset="confident" title="Strong launch and impact">Confident</button>
+            <button class="segment" role="radio" aria-checked="false" data-preset="low" title="Lower stress loss, modest activation; cautious planning.">Low impact</button>
+            <button class="segment is-active" role="radio" aria-checked="true" data-preset="typical" title="Evidence-based default for most orgs.">Typical</button>
+            <button class="segment" role="radio" aria-checked="false" data-preset="high" title="Strong activation plus mature change management.">High impact</button>
           </div>
         </div>
 
@@ -104,14 +114,28 @@
 
           <div class="field">
             <div class="field-top">
-              <label for="adoptionPct">Adoption / activation %</label>
+              <label for="adoptionPct">Adoption / activation % (entered)</label>
               <button class="info" aria-expanded="false" aria-controls="tip-adoption" aria-label="About adoption">i</button>
             </div>
-            <div class="tip" id="tip-adoption" role="tooltip">Share of employees actively using Seedli (MAU/activation). Drives benefits across all channels.</div>
-            <input id="adoptionPct" type="number" inputmode="numeric" value="50" min="0" max="100" step="1" />
+            <div class="tip" id="tip-adoption" role="tooltip">
+              Share of staff engaging with Seedli. Choose “Logins only” for app sign-ins, or “Any Seedli use” to count coaching, workshops, tools and content. The calculator uses <b>effective activation</b> for “Any use” (entered × 1.5, capped at 45%).
+            </div>
+            <input id="adoptionPct" type="number" inputmode="numeric" value="40" min="0" max="100" step="1" />
           </div>
         </div>
 
+        <!-- Activation basis -->
+        <div class="activation-wrap">
+          <span class="muted small">Activation basis:</span>
+          <label class="radio">
+            <input type="radio" name="activationBasis" value="any" checked />
+            Any Seedli use (recommended)
+          </label>
+          <label class="radio">
+            <input type="radio" name="activationBasis" value="logins" />
+            Logins only (strict)
+          </label>
+        </div>
         <p class="muted small lock-note">Pricing uses Seedli’s current plan (ex-GST for ROI comparison). Cost is charged on total headcount.</p>
 
         <!-- Advanced -->
@@ -125,7 +149,7 @@
                 <button class="info" aria-expanded="false" aria-controls="tip-trate">i</button>
               </div>
               <div class="tip" id="tip-trate" role="tooltip">Annual voluntary turnover for in-scope roles.</div>
-              <input id="turnoverRate" type="number" value="15" min="0" max="100" step="0.1" />
+              <input id="turnoverRate" type="number" value="13" min="0" max="100" step="0.1" />
             </div>
             <div class="field">
               <div class="field-top">
@@ -153,7 +177,7 @@
                 <button class="info" aria-expanded="false" aria-controls="tip-adays">i</button>
               </div>
               <div class="tip" id="tip-adays" role="tooltip">Annual days lost to stress-related absence.</div>
-              <input id="daysAbsence" type="number" value="4.0" min="0" max="30" step="0.1" />
+              <input id="daysAbsence" type="number" value="3.5" min="0" max="30" step="0.1" />
             </div>
             <div class="field">
               <div class="field-top">
@@ -209,7 +233,7 @@
             </div>
             <p id="savings" class="kval" role="status" aria-live="polite">$0</p>
             <p id="savingsBreakdown" class="kdesc"></p>
-            <div class="tip" id="tip-savings" role="tooltip">Sum of productivity, turnover, absenteeism and manager-time savings (weighted by adoption).</div>
+            <div class="tip" id="tip-savings" role="tooltip">Sum of productivity, turnover, absenteeism and manager-time savings (weighted by activation).</div>
           </section>
 
           <section class="kbox">
@@ -230,18 +254,22 @@
             <p id="net" class="kval" role="status" aria-live="polite">$0</p>
             <p id="roiPct" class="kdesc">0% ROI</p>
             <div class="tip" id="tip-net" role="tooltip">Annual return minus program cost. ROI% = Net ÷ Cost.</div>
+            <p id="negHint" class="negative-hint"></p>
           </section>
 
           <section class="kbox">
             <div class="tag">
-              Break-even Adoption
-              <button class="info" aria-expanded="false" aria-controls="tip-break" aria-label="About break-even">i</button>
+              Break-even Activation
+              <button class="info" aria-expanded="false" aria-controls="tip-break" aria-label="About break-even activation">i</button>
             </div>
             <p id="breakeven" class="kval" role="status" aria-live="polite">—</p>
-            <p class="kdesc">% of staff required to break even.</p>
+            <p class="kdesc">% of staff required to break even (under your activation basis).</p>
             <div class="tip" id="tip-break" role="tooltip">% of staff required so annual savings = program cost.</div>
           </section>
         </div>
+
+        <!-- shows on web + print -->
+        <p id="activationLine" class="activation-line muted small"></p>
       </article>
 
       <!-- How this works -->
@@ -260,10 +288,10 @@
           <div>
             <h4>Totals</h4>
             <ol start="5">
-              <li><b>Total savings</b> = employees × adoption% × (sum of per-emp savings) + manager time saved</li>
+              <li><b>Total savings</b> = employees × activation% × (sum of per-emp savings) + manager time saved</li>
               <li><b>Program cost</b> = plan price (ex-GST) × total employees</li>
               <li><b>Net</b> = savings − cost &nbsp;·&nbsp; <b>ROI%</b> = net ÷ cost</li>
-              <li><b>Break-even adoption</b> ≈ price(ex-GST) ÷ [(per-emp savings) + (manager-savings per-emp)]</li>
+              <li><b>Break-even activation</b> ≈ price(ex-GST) ÷ [(per-emp savings) + (manager-savings per-emp)]</li>
             </ol>
           </div>
         </div>
@@ -276,5 +304,19 @@
   </main>
 
   <script src="assets/app.js"></script>
+  <script>
+    // Logo fallback: try SVG if PNG missing
+    const logo = document.getElementById('brandLogo');
+    if (logo){
+      logo.onerror = () => {
+        if(!logo.dataset.triedSvg){
+          logo.dataset.triedSvg = '1';
+          logo.src = 'assets/seedli-logo.svg';
+        }else{
+          logo.style.display = 'none';
+        }
+      };
+    }
+  </script>
 </body>
 </html>
