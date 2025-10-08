@@ -4,40 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Seedli — Financial Wellbeing ROI Calculator</title>
-  <meta name="description" content="Estimate the annual return from Seedli’s financial wellbeing program. Adjust assumptions and see savings, costs, and ROI instantly." />
   <meta name="theme-color" content="#0E8A50" />
   <link rel="stylesheet" href="assets/styles.css" />
   <style>
-    /* one-page A4 print */
+    /* One-page A4 print */
     @page { size: A4; margin: 10mm; }
     @media print{
-      .no-print, .segmented, .adv-toggle, .adv, .info, .lock-note, .activation-line, .negative-hint { display:none !important; }
+      .no-print, .adv, .info, .negative-hint { display:none !important; }
       body{ background:#fff !important; }
-      .wrap{ max-width:none; padding:0; }
-      .card{ box-shadow:none !important; border-color:#e5e7eb !important; }
-      .print-only{ display:flex !important; }
-      body.print-compact *{ font-size:12px !important; line-height:1.25; }
-      body.print-compact h1{ font-size:18px !important; }
-      body.print-compact .kval{ font-size:20px !important; }
-      body.print-compact .card{ padding:10px !important; }
-      body.print-compact .out-2x2{ gap:10px !important; }
+      .wrap{ max-width:960px; padding:0; }
+      .card{ box-shadow:none !important; border-color:#e5e7eb !important; padding:10px !important; }
+      .out-2x2{ gap:10px !important; }
+      .kval{ font-size:20px !important; }
+      .how h4{ font-size:12px !important; }
+      .how ol{ font-size:12px !important; }
       .avoid-break{ break-inside: avoid; page-break-inside: avoid; }
-      .exec-summary{display:flex !important;}
+      .tip-pop{ display:none !important; }
     }
-    .print-only{ display:none; align-items:center; justify-content:space-between; margin:0 0 10px; }
   </style>
 </head>
 <body>
-  <!-- Brand header (web) -->
-  <header class="site-head no-print">
+  <header class="site-head">
     <img class="brand" id="brandLogo" src="assets/seedli-logo.png" alt="Seedli"/>
   </header>
-
-  <!-- Brand header (print) -->
-  <div class="print-only">
-    <img class="brand" src="assets/seedli-logo.png" alt="Seedli"/>
-    <div id="printDate" class="muted small"></div>
-  </div>
 
   <main class="wrap" aria-labelledby="page-title">
     <header class="page-head">
@@ -51,26 +40,19 @@
       </div>
     </header>
 
-    <!-- Executive summary row (print only) -->
-    <div class="exec-summary card avoid-break" style="display:none;">
-      <strong class="muted">Executive Summary:&nbsp;</strong>
-      <span id="sumSavings"></span>&nbsp;•&nbsp;
-      <span id="sumCost"></span>&nbsp;•&nbsp;
-      <span id="sumNet"></span>&nbsp;•&nbsp;
-      <span id="sumRoi"></span>
-    </div>
-
     <section class="grid">
       <!-- Inputs -->
       <article class="card avoid-break left" aria-labelledby="inputs-title">
         <div class="input-head">
           <h2 id="inputs-title" class="card-title">Inputs</h2>
 
-          <!-- Segmented presets -->
-          <div class="segmented" role="radiogroup" aria-label="Scenario presets">
-            <button class="segment" role="radio" aria-checked="false" data-preset="low" title="Lower stress loss, modest activation; cautious planning.">Low impact</button>
-            <button class="segment is-active" role="radio" aria-checked="true" data-preset="typical" title="Evidence-based default for most orgs.">Typical</button>
-            <button class="segment" role="radio" aria-checked="false" data-preset="high" title="Strong activation plus mature change management.">High impact</button>
+          <!-- 3-stop slider -->
+          <div class="preset">
+            <label class="preset-label" for="presetRange">Scenario</label>
+            <input id="presetRange" type="range" min="0" max="2" step="1" value="1" class="preset-range no-print" />
+            <div class="preset-marks no-print">
+              <span>Low impact</span><span>Typical</span><span>High impact</span>
+            </div>
           </div>
         </div>
 
@@ -79,63 +61,49 @@
           <div class="field">
             <div class="field-top">
               <label for="employees">Employees</label>
-              <button class="info" aria-expanded="false" aria-controls="tip-employees" aria-label="About Employees">i</button>
+              <button class="info" data-tip="tip-employees" aria-label="About employees">i</button>
             </div>
-            <div class="tip" id="tip-employees" role="tooltip">Total staff in scope. Use headcount, not FTE.</div>
             <input id="employees" type="number" inputmode="numeric" value="200" min="1" step="1" />
+            <div id="tip-employees" class="tip-pop">Total staff in scope. Use headcount, not FTE.</div>
           </div>
 
           <div class="field">
             <div class="field-top">
               <label for="salary">Avg loaded salary (incl. on-costs) $</label>
-              <button class="info" aria-expanded="false" aria-controls="tip-salary" aria-label="About salary">i</button>
+              <button class="info" data-tip="tip-salary" aria-label="About salary">i</button>
             </div>
-            <div class="tip" id="tip-salary" role="tooltip">Base salary + super, leave, payroll tax, insurance.</div>
             <input id="salary" type="number" inputmode="numeric" value="110000" min="0" step="500" />
+            <div id="tip-salary" class="tip-pop">Base salary + super, leave, payroll tax, insurance.</div>
           </div>
 
           <div class="field">
             <div class="field-top">
               <label for="lossPct">Productivity loss from financial stress %</label>
-              <button class="info" aria-expanded="false" aria-controls="tip-loss" aria-label="About productivity loss">i</button>
+              <button class="info" data-tip="tip-loss" aria-label="About productivity loss">i</button>
             </div>
-            <div class="tip" id="tip-loss" role="tooltip">Estimated % of work value lost (absenteeism + presenteeism). Typical planning range 3–5%.</div>
             <input id="lossPct" type="number" inputmode="decimal" value="4.0" min="0" max="20" step="0.1" />
+            <div id="tip-loss" class="tip-pop">Estimated % of work value lost (absenteeism + presenteeism). Typical planning range 3–5%.</div>
           </div>
 
           <div class="field">
             <div class="field-top">
               <label for="reductionPct">Reduction with program %</label>
-              <button class="info" aria-expanded="false" aria-controls="tip-reduction" aria-label="About reduction with program">i</button>
+              <button class="info" data-tip="tip-reduction" aria-label="About reduction with program">i</button>
             </div>
-            <div class="tip" id="tip-reduction" role="tooltip">Expected reduction in stress-related loss after Seedli is in place. Plan 20–35% based on rollout maturity.</div>
             <input id="reductionPct" type="number" inputmode="numeric" value="30" min="0" max="100" step="1" />
+            <div id="tip-reduction" class="tip-pop">Expected reduction in stress-related loss after Seedli is in place. Plan 20–35% based on rollout maturity.</div>
           </div>
 
           <div class="field">
             <div class="field-top">
               <label for="adoptionPct">Adoption / activation % (entered)</label>
-              <button class="info" aria-expanded="false" aria-controls="tip-adoption" aria-label="About adoption">i</button>
+              <button class="info" data-tip="tip-adoption" aria-label="About adoption">i</button>
             </div>
-            <div class="tip" id="tip-adoption" role="tooltip">
-              Share of staff engaging with Seedli. Choose “Logins only” for app sign-ins, or “Any Seedli use” to count coaching, workshops, tools and content. The calculator uses <b>effective activation</b> for “Any use” (entered × 1.5, capped at 45%).
-            </div>
-            <input id="adoptionPct" type="number" inputmode="numeric" value="40" min="0" max="100" step="1" />
+            <input id="adoptionPct" type="number" inputmode="numeric" value="28" min="0" max="100" step="1" />
+            <div id="tip-adoption" class="tip-pop">We treat activation as “any Seedli use” (coaching, workshops, tools, content). Calculator uses <b>effective activation</b> = entered × 1.5, capped at 45%.</div>
           </div>
         </div>
 
-        <!-- Activation basis -->
-        <div class="activation-wrap">
-          <span class="muted small">Activation basis:</span>
-          <label class="radio">
-            <input type="radio" name="activationBasis" value="any" checked />
-            Any Seedli use (recommended)
-          </label>
-          <label class="radio">
-            <input type="radio" name="activationBasis" value="logins" />
-            Logins only (strict)
-          </label>
-        </div>
         <p class="muted small lock-note">Pricing uses Seedli’s current plan (ex-GST for ROI comparison). Cost is charged on total headcount.</p>
 
         <!-- Advanced -->
@@ -146,26 +114,26 @@
             <div class="field">
               <div class="field-top">
                 <label for="turnoverRate">Turnover rate %</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-trate">i</button>
+                <button class="info" data-tip="tip-trate">i</button>
               </div>
-              <div class="tip" id="tip-trate" role="tooltip">Annual voluntary turnover for in-scope roles.</div>
               <input id="turnoverRate" type="number" value="13" min="0" max="100" step="0.1" />
+              <div id="tip-trate" class="tip-pop">Annual voluntary turnover for in-scope roles.</div>
             </div>
             <div class="field">
               <div class="field-top">
                 <label for="turnoverReduction">Reduction with program %</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-tred">i</button>
+                <button class="info" data-tip="tip-tred">i</button>
               </div>
-              <div class="tip" id="tip-tred" role="tooltip">Expected relative reduction in exits among participants.</div>
               <input id="turnoverReduction" type="number" value="10" min="0" max="100" step="0.1" />
+              <div id="tip-tred" class="tip-pop">Expected relative reduction in exits among participants.</div>
             </div>
             <div class="field">
               <div class="field-top">
                 <label for="replacementPct">Replacement cost % of salary</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-repl">i</button>
+                <button class="info" data-tip="tip-repl">i</button>
               </div>
-              <div class="tip" id="tip-repl" role="tooltip">All-in backfill cost (recruitment, ramp, lost productivity). 40–60% is common.</div>
               <input id="replacementPct" type="number" value="50" min="0" max="200" step="1" />
+              <div id="tip-repl" class="tip-pop">All-in backfill cost (recruitment, ramp, lost productivity). 40–60% is common.</div>
             </div>
           </div>
 
@@ -174,18 +142,18 @@
             <div class="field">
               <div class="field-top">
                 <label for="daysAbsence">Absenteeism days / employee / year</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-adays">i</button>
+                <button class="info" data-tip="tip-adays">i</button>
               </div>
-              <div class="tip" id="tip-adays" role="tooltip">Annual days lost to stress-related absence.</div>
               <input id="daysAbsence" type="number" value="3.5" min="0" max="30" step="0.1" />
+              <div id="tip-adays" class="tip-pop">Annual days lost to stress-related absence.</div>
             </div>
             <div class="field">
               <div class="field-top">
                 <label for="absenceReduction">Reduction with program %</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-ared">i</button>
+                <button class="info" data-tip="tip-ared">i</button>
               </div>
-              <div class="tip" id="tip-ared" role="tooltip">Expected reduction in days absent among participants.</div>
               <input id="absenceReduction" type="number" value="15" min="0" max="100" step="0.1" />
+              <div id="tip-ared" class="tip-pop">Expected reduction in days absent among participants.</div>
             </div>
           </div>
 
@@ -194,26 +162,26 @@
             <div class="field">
               <div class="field-top">
                 <label for="managerRatio">Employees per manager</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-mratio">i</button>
+                <button class="info" data-tip="tip-mratio">i</button>
               </div>
-              <div class="tip" id="tip-mratio" role="tooltip">Team size per manager (to estimate manager time saved).</div>
               <input id="managerRatio" type="number" value="10" min="1" step="1" />
+              <div id="tip-mratio" class="tip-pop">Team size per manager (to estimate manager time saved).</div>
             </div>
             <div class="field">
               <div class="field-top">
                 <label for="mgrHours">Hours saved / manager / month</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-mhrs">i</button>
+                <button class="info" data-tip="tip-mhrs">i</button>
               </div>
-              <div class="tip" id="tip-mhrs" role="tooltip">Time managers get back from fewer money-related escalations.</div>
               <input id="mgrHours" type="number" value="1.0" min="0" step="0.1" />
+              <div id="tip-mhrs" class="tip-pop">Time managers get back from fewer money-related escalations.</div>
             </div>
             <div class="field">
               <div class="field-top">
                 <label for="mgrSalary">Avg manager salary $</label>
-                <button class="info" aria-expanded="false" aria-controls="tip-msal">i</button>
+                <button class="info" data-tip="tip-msal">i</button>
               </div>
-              <div class="tip" id="tip-msal" role="tooltip">Used to value time saved (salary ÷ 1,980 hrs ≈ hourly rate).</div>
               <input id="mgrSalary" type="number" value="140000" min="0" step="500" />
+              <div id="tip-msal" class="tip-pop">Used to value time saved (salary ÷ 1,980 hrs ≈ hourly rate).</div>
             </div>
           </div>
         </div>
@@ -229,47 +197,41 @@
           <section class="kbox">
             <div class="tag">
               Projected Total Annual Return
-              <button class="info" aria-expanded="false" aria-controls="tip-savings" aria-label="About total return">i</button>
+              <button class="info" data-tip="tip-savings">i</button>
             </div>
             <p id="savings" class="kval" role="status" aria-live="polite">$0</p>
-            <p id="savingsBreakdown" class="kdesc"></p>
-            <div class="tip" id="tip-savings" role="tooltip">Sum of productivity, turnover, absenteeism and manager-time savings (weighted by activation).</div>
+            <div id="tip-savings" class="tip-pop">Sum of productivity, turnover, absenteeism and manager-time savings (weighted by activation).</div>
           </section>
 
           <section class="kbox">
             <div class="tag">
               Program Cost
-              <button class="info" aria-expanded="false" aria-controls="tip-cost" aria-label="About program cost">i</button>
+              <button class="info" data-tip="tip-cost">i</button>
             </div>
             <p id="cost" class="kval" role="status" aria-live="polite">$0</p>
-            <p id="costNote" class="kdesc">Ex-GST (plan price × total employees)</p>
-            <div class="tip" id="tip-cost" role="tooltip">Ex-GST. Plan price × total employees (charged company-wide).</div>
+            <div id="tip-cost" class="tip-pop">Ex-GST. Plan price × total employees (charged company-wide).</div>
           </section>
 
           <section class="kbox">
             <div class="tag">
               Net ROI
-              <button class="info" aria-expanded="false" aria-controls="tip-net" aria-label="About net ROI">i</button>
+              <button class="info" data-tip="tip-net">i</button>
             </div>
             <p id="net" class="kval" role="status" aria-live="polite">$0</p>
-            <p id="roiPct" class="kdesc">0% ROI</p>
-            <div class="tip" id="tip-net" role="tooltip">Annual return minus program cost. ROI% = Net ÷ Cost.</div>
+            <p id="roiPct" class="muted small"></p>
+            <div id="tip-net" class="tip-pop">Annual return minus program cost. ROI% = Net ÷ Cost.</div>
             <p id="negHint" class="negative-hint"></p>
           </section>
 
           <section class="kbox">
             <div class="tag">
               Break-even Activation
-              <button class="info" aria-expanded="false" aria-controls="tip-break" aria-label="About break-even activation">i</button>
+              <button class="info" data-tip="tip-break">i</button>
             </div>
             <p id="breakeven" class="kval" role="status" aria-live="polite">—</p>
-            <p class="kdesc">% of staff required to break even (under your activation basis).</p>
-            <div class="tip" id="tip-break" role="tooltip">% of staff required so annual savings = program cost.</div>
+            <div id="tip-break" class="tip-pop">% of staff required so annual savings = program cost.</div>
           </section>
         </div>
-
-        <!-- shows on web + print -->
-        <p id="activationLine" class="activation-line muted small"></p>
       </article>
 
       <!-- How this works -->
